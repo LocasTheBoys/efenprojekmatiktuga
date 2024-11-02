@@ -22,13 +22,6 @@ local function waitForMap()
         workspace.ChildAdded:Wait() -- Menunggu hingga "Map" ditambahkan
     end
     print("Map ter-load.")
-    wait(20)
-    -- Mengaktifkan HellMode
-    local args = {
-        [1] = "HellMode"
-    }
-    game:GetService("ReplicatedStorage").Remotes.Main.Modifiers:FireServer(unpack(args))
-    print("HellMode diaktifkan.")
 end
 
 -- Fungsi untuk mendapatkan parts dari path yang terdeteksi
