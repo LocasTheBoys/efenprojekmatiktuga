@@ -1,4 +1,4 @@
-wait(15)    
+wait(20)    
 -- Mengaktifkan HellMode
 local args = 
  {
