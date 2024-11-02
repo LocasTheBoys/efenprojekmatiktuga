@@ -1,7 +1,7 @@
 -- Konfigurasi
 wait(15)
 local petName = "Clowntrap"
-local waitTimeTeleport = 1
+local waitTimeTeleport = 2
 local waitTimeBetweenTeleports = 2
 local waitTimeBetweenLoops = 2
 local loopCount = 5
