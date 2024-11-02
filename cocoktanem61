@@ -1,0 +1,99 @@
+-- Konfigurasi
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local PathWaveDetection = Player.PlayerGui.Top.Wave
+
+-- Konfigurasi tambahan
+local petName = "Nightguard Afton"
+local waitTimeTeleport = 1
+local waitTimeBetweenTeleports = 1
+local waitTimeBetweenLoops = 5
+local loopCount = 5
+local targetWaves = { "Wave 0/15", "Wave 1/15" }
+local stopWave = "Wave 2/15"
+local executedWaves = {}
+local stopLoop = false
+
+-- Tunggu sampai "Map" ada di Workspace
+local function waitForMap()
+    print("Menunggu Map untuk ter-load...")
+    workspace.ChildAdded:Wait()
+    while not workspace:FindFirstChild("Map") do
+        workspace.ChildAdded:Wait()
+    end
+    print("Map ter-load.")
+end
+
+-- Fungsi teleportasi ke posisi koordinat
+local function teleportToCoordinates()
+    local character = Player.Character or Player.CharacterAdded:Wait()
+
+    -- Posisi ke-1
+    local part1 = workspace.Map:WaitForChild("Deco"):WaitForChild("5TD pickles"):WaitForChild("table")
+    local part2 = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("4")
+    local midpoint1 = (part1.Position + part2.Position) / 2
+    character.HumanoidRootPart.CFrame = CFrame.new(midpoint1)
+    task.wait(waitTimeTeleport)
+
+    -- Posisi ke-2
+    part1 = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("Start")
+    part2 = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("1")
+    local part3 = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("1")
+    local part4 = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("2")
+    local midpoint2 = (part1.Position + part2.Position) / 2
+    local midpoint3 = (part3.Position + part4.Position) / 2
+    local finalMidpoint2 = (midpoint2 + midpoint3) / 2
+    character.HumanoidRootPart.CFrame = CFrame.new(finalMidpoint2)
+    task.wait(waitTimeTeleport)
+
+    -- Posisi ke-3
+    part1 = workspace.Map:WaitForChild("Deco"):WaitForChild("5TD pickles"):WaitForChild("table")
+    part2 = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("3")
+    local midpoint4 = (part1.Position + part2.Position) / 2
+    character.HumanoidRootPart.CFrame = CFrame.new(midpoint4)
+    task.wait(waitTimeTeleport)
+end
+
+-- Fungsi utama untuk memulai summon berdasarkan loopCount dan stopLoop
+local function startSummoning()
+    for i = 1, loopCount do
+        if stopLoop then break end
+
+        teleportToCoordinates()
+        -- Mengirim sinyal "Reset" dan Summon logic di sini
+        local argsReset = { [1] = "Reset" }
+        game:GetService("ReplicatedStorage").Remotes.Misc.StopSettings:FireServer(unpack(argsReset))
+
+        for i = 1, 68 do
+            game:GetService("ReplicatedStorage").Remotes.Misc.StopSettings:FireServer()
+        end
+
+        local character = Player.Character or Player.CharacterAdded:Wait()
+        local humanoidRootPartCFrame = character.HumanoidRootPart.CFrame
+        local argsSummon = { [1] = petName, [2] = humanoidRootPartCFrame }
+        game:GetService("ReplicatedStorage").Remotes.Towers.SummonTower:FireServer(unpack(argsSummon))
+
+        task.wait(waitTimeBetweenTeleports)
+    end
+
+    task.wait(waitTimeBetweenLoops)
+end
+
+-- Listener untuk mendeteksi perubahan teks di PathWaveDetection
+PathWaveDetection:GetPropertyChangedSignal("Text"):Connect(function()
+    local waveText = PathWaveDetection.Text
+
+    if waveText == stopWave then
+        stopLoop = true
+        print("Loop dihentikan karena mencapai " .. stopWave)
+        return
+    end
+
+    if table.find(targetWaves, waveText) and not executedWaves[waveText] then
+        executedWaves[waveText] = true
+        startSummoning()
+    end
+end)
+
+-- Menunggu sampai "Map" ter-load
+waitForMap()
