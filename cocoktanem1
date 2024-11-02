@@ -22,10 +22,8 @@ local function waitForMap()
         workspace.ChildAdded:Wait() -- Menunggu hingga "Map" ditambahkan
     end
     print("Map ter-load.")
-
+    wait(20)
     -- Mengaktifkan HellMode
-    task.wait(20)
-
     local args = {
         [1] = "HellMode"
     }
