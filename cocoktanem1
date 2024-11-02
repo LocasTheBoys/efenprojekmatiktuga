@@ -24,7 +24,7 @@ local function waitForMap()
     print("Map ter-load.")
 
     -- Mengaktifkan HellMode
-    task.wait(10)
+    task.wait(20)
 
     local args = {
         [1] = "HellMode"
