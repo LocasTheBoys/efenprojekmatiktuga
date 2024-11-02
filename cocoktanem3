@@ -21,9 +21,9 @@ local part1b = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChil
 local part1c = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("2")
 
 -- Posisi 2
-local part2a = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("Start")
+local part2a = workspace.Map:WaitForChild("Paths"):WaitForChild("2"):WaitForChild("3")
 local part2b = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("3")
-local part2c = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("2")
+local part2c = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("Start")
 
 -- Posisi 3
 local part3a = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("Start")
