@@ -1,0 +1,104 @@
+wait(15)
+-- Konfigurasi
+local petName = "Dreadbear" -- Nama pet yang akan disummon, mudah diubah di sini
+local waitTimeTeleport = 1 -- Waktu tunggu setelah teleportasi sebelum summon pet
+local waitTimeBetweenTeleports = 2 -- Waktu tunggu sebelum teleportasi berikutnya
+local waitTimeBetweenLoops = 2 -- Waktu tunggu antara setiap loop
+local loopCount = 5 -- Jumlah pengulangan teleportasi dan summon pet
+local targetWaves = { "Wave 6/15", "Wave 7/15" }  -- Wave yang diinginkan untuk mulai summon
+local stopWave = "Wave 13/15"  -- Wave di mana loop akan berhenti
+
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local PathWaveDetection = Player.PlayerGui.Top.Wave
+local executedWaves = {} -- Menyimpan status eksekusi untuk setiap wave
+local stopLoop = false  -- Status untuk menghentikan loop
+
+-- Menyiapkan bagian untuk teleportasi di tiga posisi berbeda
+-- Posisi 1
+local part1a = workspace.Map:WaitForChild("Paths"):WaitForChild("2"):WaitForChild("Start")
+local part1b = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("3")
+local part1c = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("2")
+
+-- Posisi 2
+local part2a = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("Start")
+local part2b = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("3")
+local part2c = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("2")
+
+-- Posisi 3
+local part3a = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("Start")
+local part3b = workspace.Map:WaitForChild("Paths"):WaitForChild("2"):WaitForChild("Start")
+local part3c = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("2")
+
+-- Fungsi teleportasi dan summon pet
+local function teleportAndSummon(part1, part2, part3)
+    -- Jika loop harus berhenti, keluar dari fungsi
+    if stopLoop then return end
+
+    local character = Player.Character or Player.CharacterAdded:Wait()
+
+    -- Menghitung midpoint antara part1, part2, dan part3
+    local midpoint = (part1.Position + part2.Position) / 2
+    local midpoint2 = (part1.Position + part3.Position) / 2
+    local finalMidpoint = (midpoint + midpoint2) / 2
+
+    -- Menempatkan karakter pada midpoint
+    character.HumanoidRootPart.CFrame = CFrame.new(finalMidpoint)
+
+    -- Waktu tunggu setelah teleportasi sebelum summon pet
+    task.wait(waitTimeTeleport)
+
+    -- Mengirim sinyal "Reset" untuk StopSettings
+    local argsReset = { [1] = "Reset" }
+    game:GetService("ReplicatedStorage").Remotes.Misc.StopSettings:FireServer(unpack(argsReset))
+
+    -- Mengirim sinyal StopSettings berulang kali
+    for i = 1, 68 do
+        game:GetService("ReplicatedStorage").Remotes.Misc.StopSettings:FireServer()
+    end
+
+    -- Mengambil CFrame dari HumanoidRootPart pemain untuk summoning
+    local humanoidRootPartCFrame = character.HumanoidRootPart.CFrame
+
+    -- Mengirim sinyal untuk summon tower dengan pet yang sudah dikonfigurasi
+    local argsSummon = { [1] = petName, [2] = humanoidRootPartCFrame }
+    game:GetService("ReplicatedStorage").Remotes.Towers.SummonTower:FireServer(unpack(argsSummon))
+end
+
+-- Fungsi utama untuk memulai summon berdasarkan loopCount dan stopLoop
+local function startSummoning()
+    for i = 1, loopCount do
+        -- Jika loop harus berhenti, keluar dari loop
+        if stopLoop then break end
+
+        teleportAndSummon(part1a, part1b, part1c) -- Posisi 1
+        task.wait(waitTimeBetweenTeleports)
+
+        teleportAndSummon(part2a, part2b, part2c) -- Posisi 2
+        task.wait(waitTimeBetweenTeleports)
+
+        teleportAndSummon(part3a, part3b, part3c) -- Posisi 3
+        task.wait(waitTimeBetweenTeleports)
+
+        -- Waktu tunggu antara setiap loop
+        task.wait(waitTimeBetweenLoops)
+    end
+end
+
+-- Menambahkan listener untuk mendeteksi perubahan teks di PathWaveDetection
+PathWaveDetection:GetPropertyChangedSignal("Text"):Connect(function()
+    local waveText = PathWaveDetection.Text
+
+    -- Hentikan loop jika wave mencapai atau melebihi stopWave
+    if waveText == stopWave then
+        stopLoop = true
+        print("Loop dihentikan karena mencapai " .. stopWave)
+        return
+    end
+
+    -- Jika wave yang diinginkan terdeteksi dan belum dieksekusi, mulai summon
+    if table.find(targetWaves, waveText) and not executedWaves[waveText] then
+        executedWaves[waveText] = true
+        startSummoning()
+    end
+end)
