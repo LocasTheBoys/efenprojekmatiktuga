@@ -21,8 +21,8 @@ if game.PlaceId == 15860930970 then
     local scripts = {
         "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanem1",--polisi
         "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanem2",--clowntrap
-        "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/Upgrade1",--polisi
-        "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/Upgrade2",--clowntrap
+        "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/upgrade1",--polisi
+        "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/upgrade2",--clowntrap
         "https://raw.githubusercontent.com/LocasTheBoys/efentedeh/refs/heads/main/TryAgain"
     }
     
