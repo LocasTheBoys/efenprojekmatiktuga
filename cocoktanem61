@@ -5,8 +5,8 @@ local PathWaveDetection = Player.PlayerGui.Top.Wave
 
 -- Konfigurasi tambahan
 local petName = "Nightguard Afton"
-local waitTimeTeleport = 1
-local waitTimeBetweenTeleports = 1
+local waitTimeTeleport = 2
+local waitTimeBetweenTeleports = 2
 local waitTimeBetweenLoops = 5
 local loopCount = 5
 local targetWaves = { "Wave 0/15", "Wave 1/15" }
