@@ -1,0 +1,112 @@
+wait(15)
+-- Konfigurasi
+local petName = "Tangle" -- Nama pet yang akan disummon, mudah diubah di sini
+local waitTimeTeleport = 1 -- Waktu tunggu setelah teleportasi sebelum summon pet
+local waitTimeBetweenTeleports = 2 -- Waktu tunggu sebelum teleportasi berikutnya
+local waitTimeBetweenLoops = 2 -- Waktu tunggu antara setiap loop
+local loopCount = 5 -- Jumlah pengulangan teleportasi dan summon pet
+local targetWaves = { "Wave 13/15", "Wave 14/15" } -- Wave yang diinginkan untuk mulai summon 
+local stopWave = "Wave 15/15" -- Wave di mana loop akan berhenti 
+
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local PathWaveDetection = Player.PlayerGui.Top.Wave
+local executedWaves = {} -- Menyimpan status eksekusi untuk setiap wave
+local stopLoop = false -- Status untuk menghentikan loop
+
+-- Fungsi untuk mendapatkan posisi dari kumpulan script koordinat
+local function getAdjustedPosition(scriptIndex)
+    local parts = {
+        workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("Start"),
+        workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("4"),
+        workspace.Map:WaitForChild("Paths"):WaitForChild("2"):WaitForChild("1"),
+        workspace.Map:WaitForChild("Deco"):WaitForChild("Electrical Box"):WaitForChild("Meshes/Electrical Box_Cube.001"),
+        workspace.Map:WaitForChild("Deco"):WaitForChild("5TD pickles"):WaitForChild("table")
+    }
+
+    local midpoint = (parts[1].Position + parts[2].Position) / 2
+    local midpoint2 = (parts[3].Position + parts[4].Position) / 2
+    local adjustedPosition
+
+    if scriptIndex == 1 then
+        local offset = Vector3.new(30, 0, 5) -- Offset untuk posisi ke-1
+        adjustedPosition = ((midpoint + midpoint2) / 2) + offset
+    elseif scriptIndex == 2 then
+        local offset = Vector3.new(0, 0, 25) -- Offset untuk posisi ke-2
+        adjustedPosition = ((midpoint + midpoint2) / 2) + offset
+    elseif scriptIndex == 3 then
+        local offset = Vector3.new(-13, 0, 20) -- Offset untuk posisi ke-3
+        adjustedPosition = ((midpoint + midpoint2) / 2) + offset
+    end
+
+    return adjustedPosition
+end
+
+-- Fungsi teleportasi dan summon pet menggunakan logika dari Kumpulan Script Koordinat
+local function teleportAndSummon(adjustedPosition)
+    if stopLoop then return end
+
+    local character = Player.Character or Player.CharacterAdded:Wait()
+
+    -- Menempatkan karakter pada adjustedPosition
+    character.HumanoidRootPart.CFrame = CFrame.new(adjustedPosition)
+
+    -- Waktu tunggu setelah teleportasi sebelum summon pet
+    task.wait(waitTimeTeleport)
+
+    -- Mengirim sinyal "Reset" untuk StopSettings
+    local argsReset = { [1] = "Reset" }
+    game:GetService("ReplicatedStorage").Remotes.Misc.StopSettings:FireServer(unpack(argsReset))
+
+    -- Mengirim sinyal StopSettings berulang kali
+    for i = 1, 68 do
+        game:GetService("ReplicatedStorage").Remotes.Misc.StopSettings:FireServer()
+    end
+
+    -- Mengambil CFrame dari HumanoidRootPart pemain untuk summoning
+    local humanoidRootPartCFrame = character.HumanoidRootPart.CFrame
+
+    -- Mengirim sinyal untuk summon tower dengan pet yang sudah dikonfigurasi
+    local argsSummon = { [1] = petName, [2] = humanoidRootPartCFrame }
+    game:GetService("ReplicatedStorage").Remotes.Towers.SummonTower:FireServer(unpack(argsSummon))
+end
+
+-- Fungsi utama untuk memulai summon berdasarkan loopCount dan stopLoop
+local function startSummoning()
+    for i = 1, loopCount do
+        if stopLoop then break end
+
+        -- Teleportasi ke posisi 1
+        local position1 = getAdjustedPosition(1)
+        teleportAndSummon(position1)
+        task.wait(waitTimeBetweenTeleports)
+
+        -- Teleportasi ke posisi 2
+        local position2 = getAdjustedPosition(2)
+        teleportAndSummon(position2)
+        task.wait(waitTimeBetweenTeleports)
+
+        -- Teleportasi ke posisi 3
+        local position3 = getAdjustedPosition(3)
+        teleportAndSummon(position3)
+        task.wait(waitTimeBetweenTeleports)
+
+        task.wait(waitTimeBetweenLoops)
+    end
+end
+
+-- Listener untuk mendeteksi perubahan teks di PathWaveDetection
+PathWaveDetection:GetPropertyChangedSignal("Text"):Connect(function()
+    local waveText = PathWaveDetection.Text
+
+    if waveText == stopWave then
+        stopLoop = true
+        print("Loop dihentikan karena mencapai " .. stopWave)
+        return
+    end
+
+    if table.find(targetWaves, waveText) and not executedWaves[waveText] then
+        executedWaves[waveText] = true
+        startSummoning()
+    end
+end)
