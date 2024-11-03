@@ -50,9 +50,9 @@ local function startSummoning()
 
         -- Posisi 1
         local parts1 = {
-            workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("1"),
             workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("2"),
-            workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("1"),
+            workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("2"),
+            workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("2"),
             workspace.Map:WaitForChild("Paths"):WaitForChild("2"):WaitForChild("1")
         }
         teleportAndSummon(parts1)
@@ -60,7 +60,7 @@ local function startSummoning()
 
         -- Posisi 2
         local parts2 = {
-            workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("2"),
+            workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("1"),
             workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("2"),
             workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("1"),
             workspace.Map:WaitForChild("Paths"):WaitForChild("2"):WaitForChild("1")
@@ -72,7 +72,7 @@ local function startSummoning()
         local parts3 = {
             workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("2"),
             workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("2"),
-            workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("2"),
+            workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("1"),
             workspace.Map:WaitForChild("Paths"):WaitForChild("2"):WaitForChild("1")
         }
         teleportAndSummon(parts3)
