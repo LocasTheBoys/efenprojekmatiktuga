@@ -1,0 +1,27 @@
+wait(20)
+local enemiesFolder = workspace:WaitForChild("Enemies")
+
+-- Fungsi untuk menghapus semua musuh di folder Enemies
+local function clearEnemies()
+    for _, enemy in pairs(enemiesFolder:GetChildren()) do
+        pcall(function()
+            enemy:Destroy()
+        end)
+    end
+end
+
+-- Jalankan fungsi clearEnemies saat script pertama kali dijalankan
+clearEnemies()
+
+-- Pantau jika ada musuh baru yang ditambahkan ke folder Enemies
+enemiesFolder.ChildAdded:Connect(function(child)
+    pcall(function()
+        child:Destroy()
+    end)
+end)
+
+-- Pantau jika musuh lama dihapus atau folder di-refresh
+enemiesFolder.ChildRemoved:Connect(function()
+    task.wait(0.1)  -- Memberi sedikit jeda sebelum memeriksa ulang folder
+    clearEnemies()
+end)
