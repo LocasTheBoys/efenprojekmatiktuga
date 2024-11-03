@@ -69,8 +69,8 @@ local function startSummoning()
         task.wait(waitTimeBetweenTeleports)
 
         -- Posisi 3 dari Dreadbear
-        part1 = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("3")
-        part2 = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("1")
+        part1 = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("Start")
+        part2 = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("2")
         local middlePosition2 = (part1.Position + part2.Position) / 2
         teleportAndSummon(middlePosition2)
         task.wait(waitTimeBetweenTeleports)
