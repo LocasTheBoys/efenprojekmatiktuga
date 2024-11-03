@@ -1,0 +1,47 @@
+wait(20)
+-- MORE LOW GRAPHICS
+local g = game
+local w = g.Workspace
+local l = g.Lighting
+local t = w.Terrain
+
+-- Optimasi untuk meringankan kerja GPU
+sethiddenproperty(l, "Technology", 2)  -- Menurunkan teknologi pencahayaan
+sethiddenproperty(t, "Decoration", false)  -- Menonaktifkan dekorasi terrain
+
+t.WaterWaveSize = 0
+t.WaterWaveSpeed = 0
+t.WaterReflectance = 0
+t.WaterTransparency = 0
+
+l.GlobalShadows = false  -- Menonaktifkan bayangan global
+l.FogEnd = 9e9  -- Menonaktifkan fog dengan jarak yang sangat jauh
+l.Brightness = 0  -- Mengurangi kecerahan
+
+for i, v in pairs(w:GetDescendants()) do
+    if v:IsA("BasePart") and not v:IsA("MeshPart") then
+        v.Material = "Plastic"
+        v.Reflectance = 0
+    elseif v:IsA("Decal") or v:IsA("Texture") then
+        v.Transparency = 1
+    elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+        v.Lifetime = NumberRange.new(0)  -- Menghapus partikel
+    elseif v:IsA("Explosion") then
+        v.BlastPressure = 1
+        v.BlastRadius = 1
+    elseif v:IsA("Fire") or v:IsA("SpotLight") or v:IsA("Smoke") or v:IsA("Sparkles") then
+        v.Enabled = false  -- Menonaktifkan efek visual tambahan
+    elseif v:IsA("MeshPart") then
+        v.Material = "Plastic"
+        v.Reflectance = 0
+        v.TextureID = 10385902758728957  -- Menghapus tekstur
+    elseif v:IsA("SpecialMesh") then
+        v.TextureId = 0  -- Menghapus tekstur pada mesh khusus
+    end
+end
+
+for i, e in pairs(l:GetChildren()) do
+    if e:IsA("BlurEffect") or e:IsA("SunRaysEffect") or e:IsA("ColorCorrectionEffect") or e:IsA("BloomEffect") or e:IsA("DepthOfFieldEffect") then
+        e.Enabled = false  -- Menonaktifkan efek pencahayaan tambahan
+    end
+end
