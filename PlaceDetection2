@@ -26,6 +26,7 @@ if game.PlaceId == 15860930970 then
         "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/upgrade62",--clowntrap
         "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/upgrade63",--Dreadbear
         "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/ModePilih",--ModeHard
+        "https://raw.githubusercontent.com/LocasTheBoys/efentedeh/refs/heads/main/AutoSkip",
         "https://raw.githubusercontent.com/LocasTheBoys/efentedeh/refs/heads/main/TryAgain"
     }
     
