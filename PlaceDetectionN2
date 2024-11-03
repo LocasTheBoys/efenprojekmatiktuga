@@ -17,7 +17,7 @@ if game.PlaceId == 15860930970 then
             coroutine.resume(co)
         end
     end
-    
+
     local scripts = {
         "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemN61",--polisi
         "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemN62",--clowntrap
@@ -28,6 +28,7 @@ if game.PlaceId == 15860930970 then
         "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/upgrade63",--Dreadbear
         "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/upgrade64",--Tangle
         "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/ModePilih",--ModeHard
+        "    https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/PlaySkipWave",
         "https://raw.githubusercontent.com/LocasTheBoys/efentedeh/refs/heads/main/TryAgain"
     }
     
