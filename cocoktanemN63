@@ -1,6 +1,6 @@
 wait(15)
 -- Konfigurasi
-local petName = "Dreadbear" -- Nama pet yang akan disummon, mudah diubah di sini
+local petName = "Scarecrow Foxy" -- Nama pet yang akan disummon, mudah diubah di sini
 local waitTimeTeleport = 1 -- Waktu tunggu setelah teleportasi sebelum summon pet
 local waitTimeBetweenTeleports = 2 -- Waktu tunggu sebelum teleportasi berikutnya
 local waitTimeBetweenLoops = 2 -- Waktu tunggu antara setiap loop
