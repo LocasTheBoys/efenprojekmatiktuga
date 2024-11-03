@@ -14,33 +14,18 @@ local PathWaveDetection = Player.PlayerGui.Top.Wave
 local executedWaves = {} -- Menyimpan status eksekusi untuk setiap wave
 local stopLoop = false  -- Status untuk menghentikan loop
 
--- Menyiapkan bagian untuk teleportasi di tiga posisi berbeda
--- Posisi 1
-local part1a = workspace.Map:WaitForChild("Paths"):WaitForChild("2"):WaitForChild("Start")
-local part1b = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("3")
-local part1c = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("2")
-
--- Posisi 2
-local part2a = workspace.Map:WaitForChild("Paths"):WaitForChild("2"):WaitForChild("Start")
-local part2b = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("Start")
-local part2c = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("2")
-
--- Posisi 3 (Dreadbear)
-local part3a = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("2")
-local part3b = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("4")
-
--- Fungsi teleportasi dan summon pet
-local function teleportAndSummon(part1, part2, part3)
-    -- Jika loop harus berhenti, keluar dari fungsi
+-- Fungsi teleportasi dan summon pet menggunakan logika dari Kumpulan Script Koordinat
+local function teleportAndSummon(part1, part2, part3, part4)
     if stopLoop then return end
 
     local character = Player.Character or Player.CharacterAdded:Wait()
 
-    -- Menghitung midpoint antara part1, part2, dan part3
+    -- Menghitung midpoint antara part1, part2, part3, dan part4
     local midpoint = (part1.Position + part2.Position) / 2
-    local finalMidpoint = midpoint -- Menggunakan midpoint yang dihitung
+    local midpoint2 = (part3.Position + part4.Position) / 2
+    local finalMidpoint = (midpoint + midpoint2) / 2
 
-    -- Menempatkan karakter pada midpoint
+    -- Menempatkan karakter pada finalMidpoint
     character.HumanoidRootPart.CFrame = CFrame.new(finalMidpoint)
 
     -- Waktu tunggu setelah teleportasi sebelum summon pet
@@ -66,38 +51,47 @@ end
 -- Fungsi utama untuk memulai summon berdasarkan loopCount dan stopLoop
 local function startSummoning()
     for i = 1, loopCount do
-        -- Jika loop harus berhenti, keluar dari loop
         if stopLoop then break end
 
-        teleportAndSummon(part1a, part1b, part1c) -- Posisi 1
+        -- Posisi 1
+        local part1 = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("1")
+        local part2 = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("2")
+        local part3 = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("2")
+        local part4 = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("3")
+        teleportAndSummon(part1, part2, part3, part4)
         task.wait(waitTimeBetweenTeleports)
 
-        teleportAndSummon(part2a, part2b, part2c) -- Posisi 2
+        -- Posisi 2
+        part1 = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("Start")
+        part2 = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("3")
+        teleportAndSummon(part1, part2, part2, part2) -- Menggunakan part2 ganda untuk konsistensi
         task.wait(waitTimeBetweenTeleports)
 
-        -- Menghitung midpoint untuk posisi 3
-        local middlePosition = (part3a.Position + part3b.Position) / 2
-        -- Teleport dan summon menggunakan midpoint
-        teleportAndSummon(part3a, part3b, part3a) -- Menggunakan part3a dan part3b untuk midpoint
+        -- Posisi 3 (Koordinat yang diperbarui)
+        local part1 = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("2")
+        local part2 = workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("4")
+        local middlePosition = (part1.Position + part2.Position) / 2
+
+        -- Teleport ke middle position
+        character.HumanoidRootPart.CFrame = CFrame.new(middlePosition)
+
+        teleportAndSummon(part1, part2, part1, part2) -- Menggunakan part1 dan part2 untuk midpoint
         task.wait(waitTimeBetweenTeleports)
 
-        -- Waktu tunggu antara setiap loop
         task.wait(waitTimeBetweenLoops)
     end
 end
 
--- Menambahkan listener untuk mendeteksi perubahan teks di PathWaveDetection
+-- Listener untuk mendeteksi perubahan teks di PathWaveDetection
 PathWaveDetection:GetPropertyChangedSignal("Text"):Connect(function()
     local waveText = PathWaveDetection.Text
 
-    -- Hentikan loop jika wave mencapai atau melebihi stopWave
     if waveText == stopWave then
         stopLoop = true
         print("Loop dihentikan karena mencapai " .. stopWave)
         return
     end
 
-    -- Jika wave yang diinginkan terdeteksi dan belum dieksekusi, mulai summon
     if table.find(targetWaves, waveText) and not executedWaves[waveText] then
         executedWaves[waveText] = true
         startSummoning()
