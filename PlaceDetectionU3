@@ -1,0 +1,45 @@
+if game.PlaceId == 15860930970 then
+    wait(1)
+    -- Pilih Level
+    local args = {
+        [1] = "6",
+        [2] = 1,
+        [3] = 3
+    }
+    game:GetService("ReplicatedStorage").Remotes.Main.Vote:FireServer(unpack(args))
+    wait (1)
+    print("Cocok Tanam Dan TP")
+    local function executeScripts(scripts)
+        for _, script in ipairs(scripts) do
+            local co = coroutine.create(function()
+                loadstring(game:HttpGet(script))()
+            end)
+            coroutine.resume(co)
+        end
+    end
+
+    local scripts = {
+        "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemU61",--polisi
+        "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemU62",--clowntrap
+        "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemU63",--Scarecrow Foxy
+        "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemU64",--it's me
+        "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemU65",--Dreadbear
+        "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemU66",--Pisau2
+        "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/UpgradeU61",--polisi
+        "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/UpgradeU62",--clowntrap
+        "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/UpgradeU63",--Dreadbear
+        "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/UpgradeU64",--Tangle
+        "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/UpgradeU65",--Dreadbear
+        "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/UpgradeU66",--Pisau2
+        "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/ModePilih",--ModeHard
+        "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/DelMusuh",
+        "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/PlaySkipWave",
+        "https://raw.githubusercontent.com/LocasTheBoys/efentedeh/refs/heads/main/TryAgain"
+    }
+    
+    executeScripts(scripts)
+    print("Game ID cocok, script dijalankan.")
+else
+    -- Script ini hanya dijalankan jika game ID tidak cocok
+    print("Game ID tidak cocok, script tidak dijalankan.")
+end
