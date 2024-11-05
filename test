@@ -1,3 +1,5 @@
+-- Konfigurasi
+wait(2)
 local petName = "Nightguard Afton"
 local waitTimeTeleport = 2
 local waitTimeBetweenTeleports = 2
@@ -13,6 +15,7 @@ local Money = Player:WaitForChild("Money")
 local PathWaveDetection = Player.PlayerGui.Top.Wave
 local executedWaves = {}
 local stopLoop = false
+local moneyDetected = false -- Variabel untuk mendeteksi apakah targetMoney sudah tercapai
 
 -- Fungsi untuk menghitung midpoint dengan logika dari Kumpulan Script Koordinat
 local function calculateAdjustedMidpoint(parts, offset)
@@ -45,7 +48,11 @@ end
 
 -- Fungsi utama untuk memulai summon
 local function startSummoning()
+    if stopLoop then return end
+    stopLoop = true -- Hentikan loop setelah satu kali eksekusi
+
     for i = 1, loopCount do
+        -- Cek apakah stopLoop diubah karena stopWave sudah tercapai
         if stopLoop then break end
 
         -- Posisi 1
@@ -84,6 +91,7 @@ end
 
 -- Listener untuk mendeteksi perubahan teks di PathWaveDetection
 PathWaveDetection:GetPropertyChangedSignal("Text"):Connect(function()
+    if stopLoop then return end
     local waveText = PathWaveDetection.Text
     if waveText == stopWave then
         stopLoop = true
@@ -91,7 +99,7 @@ PathWaveDetection:GetPropertyChangedSignal("Text"):Connect(function()
         return
     end
 
-    if table.find(targetWaves, waveText) and not executedWaves[waveText] then
+    if table.find(targetWaves, waveText) and not executedWaves[waveText] and not moneyDetected then
         executedWaves[waveText] = true
         startSummoning()
     end
@@ -99,7 +107,8 @@ end)
 
 -- Listener untuk mendeteksi perubahan nilai Money
 Money:GetPropertyChangedSignal("Value"):Connect(function()
-    if Money.Value >= targetMoney and not stopLoop then
+    if Money.Value >= targetMoney and not moneyDetected then
+        moneyDetected = true -- Tandai bahwa targetMoney sudah tercapai
         print("Jumlah money tercapai: " .. Money.Value)
         startSummoning()
     end
