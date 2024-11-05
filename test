@@ -1,29 +1,29 @@
 -- Konfigurasi
-print("Testis 5")
--- Konfigurasi
-local targetWavesForUpgrade = { "Wave 0/15", "Wave 1/15" } -- Wave di mana upgrade diaktifkan
-local stopWave = "Wave 10/15" -- Wave di mana loop upgrade akan berhenti
-local petNameToUpgrade = "Nightguard Afton" -- Nama pet yang akan di-upgrade
-local checkInterval = 5 -- Interval waktu antar pengecekan (dalam detik)
-local targetMoney = 700 -- Target jumlah uang untuk memulai upgrade, bisa diatur ke nil untuk menonaktifkan
-local PlacementMaxCap = 3 -- Kapasitas maksimum unit yang bisa dipasang
+print("Testis 6")
 
--- Path untuk mendeteksi wave
+-- Konfigurasi
+local petNameToUpgrade = "Nightguard Afton" -- Name of the pet/unit to be upgraded
+local targetWavesForUpgrade = { "Wave 0/15", "Wave 1/15" } -- Waves where upgrades should start
+local stopWave = "Wave 5/15" -- Wave to stop the upgrade loop
+local checkInterval = 5 -- Time interval (in seconds) between each check
+local PlacementMaxCap = 3 -- Maximum number of units that can be placed
+
+-- Services and player references
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 local PathWaveDetection = Player.PlayerGui.Top.Wave
-local Money = Player:WaitForChild("Money") -- Mengambil objek Money dari pemain
-local upgradeActive = false
+local TowersFolder = workspace:WaitForChild("Towers")
+local upgradeActive = false -- Status flag for the upgrade process
 
--- Fungsi untuk mengecek apakah wave saat ini dalam daftar target
+-- Function to check if the current wave is eligible for upgrades
 local function isWaveEligibleForUpgrade(currentWaveText)
     return table.find(targetWavesForUpgrade, currentWaveText) ~= nil
 end
 
--- Fungsi untuk menghitung jumlah unit yang telah ditempatkan
+-- Function to count the number of placed units with a specific name
 local function countPlacedUnits(unitName)
     local count = 0
-    for _, tower in pairs(workspace.Towers:GetChildren()) do
+    for _, tower in pairs(TowersFolder:GetChildren()) do
         if tower.Name == unitName and tower:IsA("Model") then
             count = count + 1
         end
@@ -31,90 +31,58 @@ local function countPlacedUnits(unitName)
     return count
 end
 
--- Fungsi untuk memeriksa apakah semua "Clowntrap" telah diupgrade ke "Star3"
-local function areAllClowntrapsUpgraded()
-    for _, tower in pairs(workspace.Towers:GetChildren()) do
-        if tower.Name == petNameToUpgrade then
-            local upgradeStar = tower:FindFirstChild("UpgradeStar")
+-- Function to check if all folders within a unit have their "UpgradeStar" at Star3
+local function allUnitsUpgradedToStar3(unit)
+    for _, folder in ipairs(unit:GetChildren()) do
+        if folder:IsA("Folder") and folder.Name == petNameToUpgrade then
+            local upgradeStar = folder:FindFirstChild("UpgradeStar")
             if upgradeStar and upgradeStar.Value ~= "Star3" then
-                return false -- Jika ada satu yang tidak "Star3", kembalikan false
+                return false
             end
         end
     end
-    return true -- Semua sudah "Star3"
+    return true
 end
 
--- Loop utama script upgrade
+-- Main loop for upgrading units
 while true do
     local waveText = PathWaveDetection.Text
 
-    -- Aktifkan upgrade jika wave saat ini termasuk dalam target wave
-    if isWaveEligibleForUpgrade(waveText) and (targetMoney == nil or Money.Value >= targetMoney) then
+    -- Activate the upgrade process if the current wave is in the target list
+    if isWaveEligibleForUpgrade(waveText) then
         upgradeActive = true
     end
 
-    -- Hentikan upgrade jika wave saat ini mencapai stopWave
+    -- Stop the upgrade process if the stopWave is reached
     if waveText == stopWave then
         upgradeActive = false
     end
 
-    -- Jika upgrade diaktifkan, jalankan proses upgrade
+    -- If the upgrade process is active, execute the logic to find and upgrade units
     if upgradeActive then
-        local currentPlacementCount = countPlacedUnits(petNameToUpgrade)
-
-        if currentPlacementCount >= PlacementMaxCap then
-            if areAllClowntrapsUpgraded() then
-                upgradeActive = false
-                print("Semua Clowntrap sudah diupgrade ke Star3, mengeksekusi loadstring.")
-
-                -- Eksekusi loadstring jika semua Clowntrap telah diupgrade
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemN62"))()
-            else
-                print("Belum semua Clowntrap diupgrade ke Star3. Upgrade tidak dilanjutkan.")
+        local allUpgradableUnits = {}
+        for _, unit in pairs(TowersFolder:GetChildren()) do
+            if unit.Name == petNameToUpgrade then
+                table.insert(allUpgradableUnits, unit)
             end
-        else
-            local allUpgradableUnits = {}
-            for _, unit in pairs(workspace.Towers:GetChildren()) do
-                if unit.Name == petNameToUpgrade then
-                    local primaryPart = unit:FindFirstChildWhichIsA("BasePart")
-                    if primaryPart then
-                        table.insert(allUpgradableUnits, unit)
-                    end
-                end
-            end
+        end
 
-            if #allUpgradableUnits > 0 then
-                for _, unit in ipairs(allUpgradableUnits) do
-                    local upgradeArgs = {
-                        [1] = unit
-                    }
-                    local success, err = pcall(function()
-                        game:GetService("ReplicatedStorage").Remotes.Towers.Upgrade:FireServer(unpack(upgradeArgs))
-                    end)
-                    if not success then
-                        warn("Upgrade failed for unit: " .. unit.Name .. " with error: " .. err)
-                    end
+        -- Check if the number of placed units has reached the maximum capacity
+        if #allUpgradableUnits >= PlacementMaxCap then
+            print("Maximum placement capacity reached. Checking unit upgrades...")
+
+            for _, unit in ipairs(allUpgradableUnits) do
+                if allUnitsUpgradedToStar3(unit) then
+                    print("All units are at Star3. Executing loadstring...")
+                    loadstring(game:HttpGet("https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemU64"))()
+                    break
+                else
+                    print("Not all units are at Star3 yet.")
                 end
             end
         end
     end
 
-    wait(checkInterval) -- Delay antar loop
+    wait(checkInterval) -- Delay between each loop iteration
 end
 
--- Listener untuk mendeteksi perubahan nilai Money
-Money:GetPropertyChangedSignal("Value"):Connect(function()
-    if (targetMoney == nil or Money.Value >= targetMoney) and not upgradeActive then
-        print("Jumlah money tercapai: " .. Money.Value)
-        upgradeActive = true -- Mengaktifkan upgrade jika target uang tercapai
-    end
-end)
-
--- Listener untuk mendeteksi perubahan teks di PathWaveDetection
-PathWaveDetection:GetPropertyChangedSignal("Text"):Connect(function()
-    local waveText = PathWaveDetection.Text
-    if waveText == stopWave then
-        upgradeActive = false
-        print("Loop dihentikan karena mencapai " .. stopWave)
-    end
-end)
