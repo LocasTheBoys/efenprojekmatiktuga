@@ -1,5 +1,5 @@
 -- Konfigurasi
-print("Testis 8")
+print("Testis 9")
 
 -- Konfigurasi
 local petNameToUpgrade = "Nightguard Afton" -- Name of the pet/unit to be upgraded
@@ -85,7 +85,7 @@ while true do
 
                 if allUnitsUpgradedToStar3(allUpgradableUnits) then
                     print("All units are at Star3. Executing loadstring...")
-                    loadstring(game:HttpGet("https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemU64"))()
+                    loadstring(game:HttpGet("https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemN62"))()
                     upgradeActive = false -- Stop further checks after executing loadstring
                 else
                     print("Not all units are at Star3 yet. Continuing to monitor...")
