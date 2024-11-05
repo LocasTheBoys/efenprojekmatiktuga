@@ -1,5 +1,5 @@
 -- Konfigurasi
-print("Testis 7")
+print("Testis 8")
 
 -- Konfigurasi
 local petNameToUpgrade = "Nightguard Afton" -- Name of the pet/unit to be upgraded
@@ -31,14 +31,24 @@ local function countPlacedUnits(unitName)
     return count
 end
 
--- Function to check if all folders within a unit have their "UpgradeStar" at Star3
-local function allUnitsUpgradedToStar3(unit)
+-- Function to check if a unit has its "UpgradeStar" at Star3
+local function isUnitAtStar3(unit)
     for _, folder in ipairs(unit:GetChildren()) do
         if folder:IsA("Folder") and folder.Name == petNameToUpgrade then
             local upgradeStar = folder:FindFirstChild("UpgradeStar")
             if upgradeStar and upgradeStar.Value ~= "Star3" then
                 return false
             end
+        end
+    end
+    return true
+end
+
+-- Function to check if all units have been upgraded to Star3
+local function allUnitsUpgradedToStar3(units)
+    for _, unit in ipairs(units) do
+        if not isUnitAtStar3(unit) then
+            return false
         end
     end
     return true
@@ -67,22 +77,24 @@ while true do
             end
         end
 
-        -- Check if the number of placed units has reached the maximum capacity
-        if #allUpgradableUnits >= PlacementMaxCap then
-            print("Maximum placement capacity reached. Checking unit upgrades...")
+        -- Ensure at least one unit was found
+        if #allUpgradableUnits > 0 then
+            -- Check if the number of placed units has reached the maximum capacity
+            if #allUpgradableUnits >= PlacementMaxCap then
+                print("Maximum placement capacity reached. Checking unit upgrades...")
 
-            for _, unit in ipairs(allUpgradableUnits) do
-                if allUnitsUpgradedToStar3(unit) then
+                if allUnitsUpgradedToStar3(allUpgradableUnits) then
                     print("All units are at Star3. Executing loadstring...")
-                    loadstring(game:HttpGet("https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemN62"))()
-                    break
+                    loadstring(game:HttpGet("https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemU64"))()
+                    upgradeActive = false -- Stop further checks after executing loadstring
                 else
-                    print("Not all units are at Star3 yet.")
+                    print("Not all units are at Star3 yet. Continuing to monitor...")
                 end
             end
+        else
+            print("No units found for the specified pet name.")
         end
     end
 
     wait(checkInterval) -- Delay between each loop iteration
 end
-
