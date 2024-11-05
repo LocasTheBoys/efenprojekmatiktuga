@@ -1,30 +1,30 @@
 -- Konfigurasi
-print("Testis 3")
--- Konfigurasi
+print("Testis 4")
 wait(15)
-local petName = "Clowntrap"
-local waitTimeTeleport = 2
-local waitTimeBetweenTeleports = 2
-local waitTimeBetweenLoops = 1
-local loopCount = 5
-local targetWaves = { "Wave 2/15", "Wave 3/15" }
-local stopWave = "Wave 5/15"
-local targetMoney = 3000 -- Ubah jumlah target money sesuai kebutuhan
+-- Konfigurasi
+local targetWavesForUpgrade = { "Wave 4/15", "Wave 5/15" } -- Wave di mana upgrade diaktifkan
+local stopWave = "Wave 10/15" -- Wave di mana loop upgrade akan berhenti
+local petNameToUpgrade = "Clowntrap" -- Nama pet yang akan di-upgrade
+local checkInterval = 5 -- Interval waktu antar pengecekan (dalam detik)
+local targetMoney = nil -- Target jumlah uang untuk memulai upgrade, bisa diatur ke nil untuk menonaktifkan
 local PlacementMaxCap = 3 -- Kapasitas maksimum unit yang bisa dipasang
 
+-- Path untuk mendeteksi wave
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
-local Money = Player:WaitForChild("Money")
 local PathWaveDetection = Player.PlayerGui.Top.Wave
-local TowersFolder = workspace:WaitForChild("Towers")
-local executedWaves = {}
-local stopLoop = false
-local scriptExecuted = false -- Variabel untuk memastikan script hanya berjalan sekali
+local Money = Player:WaitForChild("Money") -- Mengambil objek Money dari pemain
+local upgradeActive = false
+
+-- Fungsi untuk mengecek apakah wave saat ini dalam daftar target
+local function isWaveEligibleForUpgrade(currentWaveText)
+    return table.find(targetWavesForUpgrade, currentWaveText) ~= nil
+end
 
 -- Fungsi untuk menghitung jumlah unit yang telah ditempatkan
 local function countPlacedUnits(unitName)
     local count = 0
-    for _, tower in pairs(TowersFolder:GetChildren()) do
+    for _, tower in pairs(workspace.Towers:GetChildren()) do
         if tower.Name == unitName and tower:IsA("Model") then
             count = count + 1
         end
@@ -32,109 +32,90 @@ local function countPlacedUnits(unitName)
     return count
 end
 
--- Fungsi untuk menghitung midpoint dengan logika dari Kumpulan Script Koordinat
-local function calculateAdjustedMidpoint(parts, offset)
-    local midpoint1 = (parts[1].Position + parts[2].Position) / 2
-    local midpoint2 = (parts[3].Position + parts[4].Position) / 2
-    return ((midpoint1 + midpoint2) / 2) + offset
+-- Fungsi untuk memeriksa apakah semua "Clowntrap" telah diupgrade ke "Star3"
+local function areAllClowntrapsUpgraded()
+    for _, tower in pairs(workspace.Towers:GetChildren()) do
+        if tower.Name == petNameToUpgrade then
+            local upgradeStar = tower:FindFirstChild("UpgradeStar")
+            if upgradeStar and upgradeStar.Value ~= "Star3" then
+                return false -- Jika ada satu yang tidak "Star3", kembalikan false
+            end
+        end
+    end
+    return true -- Semua sudah "Star3"
 end
 
--- Fungsi teleportasi dan summon pet
-local function teleportAndSummon(parts, offset)
-    if stopLoop then return end
-
-    local currentPlacementCount = countPlacedUnits(petName)
-    if currentPlacementCount >= PlacementMaxCap then
-        stopLoop = true
-        print("Script dihentikan karena kapasitas maksimum unit tercapai.")
-        
-        -- Eksekusi loadstring jika kapasitas maksimum tercapai
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemN63"))()
-        
-        return
-    end
-
-    local character = Player.Character or Player.CharacterAdded:Wait()
-    local adjustedPosition = calculateAdjustedMidpoint(parts, offset)
-    character.HumanoidRootPart.CFrame = CFrame.new(adjustedPosition)
-
-    task.wait(waitTimeTeleport)
-
-    local argsReset = { [1] = "Reset" }
-    game:GetService("ReplicatedStorage").Remotes.Misc.StopSettings:FireServer(unpack(argsReset))
-
-    for i = 1, 68 do
-        game:GetService("ReplicatedStorage").Remotes.Misc.StopSettings:FireServer()
-    end
-
-    local humanoidRootPartCFrame = character.HumanoidRootPart.CFrame
-    local argsSummon = { [1] = petName, [2] = humanoidRootPartCFrame }
-    game:GetService("ReplicatedStorage").Remotes.Towers.SummonTower:FireServer(unpack(argsSummon))
-end
-
--- Fungsi utama untuk memulai summon
-local function startSummoning()
-    if scriptExecuted then return end
-    scriptExecuted = true -- Tandai bahwa script sudah berjalan
-
-    for i = 1, loopCount do
-        if stopLoop then break end
-
-        -- Posisi 1
-        local parts1 = {
-            workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("Start"),
-            workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("4"),
-            workspace.Map:WaitForChild("Paths"):WaitForChild("2"):WaitForChild("1"),
-            workspace.Map:WaitForChild("Deco"):WaitForChild("Electrical Box"):WaitForChild("Meshes/Electrical Box_Cube.001")
-        }
-        teleportAndSummon(parts1, Vector3.new(17, 0, 15)) -- Offset untuk Posisi 1
-        task.wait(waitTimeBetweenTeleports)
-
-        -- Posisi 2
-        local parts2 = {
-            workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("Start"),
-            workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("4"),
-            workspace.Map:WaitForChild("Paths"):WaitForChild("2"):WaitForChild("1"),
-            workspace.Map:WaitForChild("Deco"):WaitForChild("Electrical Box"):WaitForChild("Meshes/Electrical Box_Cube.001")
-        }
-        teleportAndSummon(parts2, Vector3.new(3, 0, 15)) -- Offset untuk Posisi 2
-        task.wait(waitTimeBetweenTeleports)
-
-        -- Posisi 3
-        local parts3 = {
-            workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("Start"),
-            workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("4"),
-            workspace.Map:WaitForChild("Paths"):WaitForChild("2"):WaitForChild("1"),
-            workspace.Map:WaitForChild("Deco"):WaitForChild("Electrical Box"):WaitForChild("Meshes/Electrical Box_Cube.001")
-        }
-        teleportAndSummon(parts3, Vector3.new(9, 0, 15)) -- Offset untuk Posisi 3
-        task.wait(waitTimeBetweenTeleports)
-
-        task.wait(waitTimeBetweenLoops)
-    end
-end
-
--- Listener untuk mendeteksi perubahan teks di PathWaveDetection
-PathWaveDetection:GetPropertyChangedSignal("Text"):Connect(function()
-    if scriptExecuted then return end
+-- Loop utama script upgrade
+while true do
     local waveText = PathWaveDetection.Text
-    if waveText == stopWave then
-        stopLoop = true
-        print("Loop dihentikan karena mencapai " .. stopWave)
-        return
+
+    -- Aktifkan upgrade jika wave saat ini termasuk dalam target wave
+    if isWaveEligibleForUpgrade(waveText) and (targetMoney == nil or Money.Value >= targetMoney) then
+        upgradeActive = true
     end
 
-    if table.find(targetWaves, waveText) and not executedWaves[waveText] then
-        executedWaves[waveText] = true
-        print("Target wave tercapai: " .. waveText)
-        startSummoning()
+    -- Hentikan upgrade jika wave saat ini mencapai stopWave
+    if waveText == stopWave then
+        upgradeActive = false
     end
-end)
+
+    -- Jika upgrade diaktifkan, jalankan proses upgrade
+    if upgradeActive then
+        local currentPlacementCount = countPlacedUnits(petNameToUpgrade)
+
+        if currentPlacementCount >= PlacementMaxCap then
+            if areAllClowntrapsUpgraded() then
+                upgradeActive = false
+                print("Semua Clowntrap sudah diupgrade ke Star3, mengeksekusi loadstring.")
+
+                -- Eksekusi loadstring jika semua Clowntrap telah diupgrade
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemU64"))()
+            else
+                print("Belum semua Clowntrap diupgrade ke Star3. Upgrade tidak dilanjutkan.")
+            end
+        else
+            local allUpgradableUnits = {}
+            for _, unit in pairs(workspace.Towers:GetChildren()) do
+                if unit.Name == petNameToUpgrade then
+                    local primaryPart = unit:FindFirstChildWhichIsA("BasePart")
+                    if primaryPart then
+                        table.insert(allUpgradableUnits, unit)
+                    end
+                end
+            end
+
+            if #allUpgradableUnits > 0 then
+                for _, unit in ipairs(allUpgradableUnits) do
+                    local upgradeArgs = {
+                        [1] = unit
+                    }
+                    local success, err = pcall(function()
+                        game:GetService("ReplicatedStorage").Remotes.Towers.Upgrade:FireServer(unpack(upgradeArgs))
+                    end)
+                    if not success then
+                        warn("Upgrade failed for unit: " .. unit.Name .. " with error: " .. err)
+                    end
+                end
+            end
+        end
+    end
+
+    wait(checkInterval) -- Delay antar loop
+end
 
 -- Listener untuk mendeteksi perubahan nilai Money
 Money:GetPropertyChangedSignal("Value"):Connect(function()
-    if Money.Value >= targetMoney and not scriptExecuted then
+    if (targetMoney == nil or Money.Value >= targetMoney) and not upgradeActive then
         print("Jumlah money tercapai: " .. Money.Value)
-        startSummoning()
+        upgradeActive = true -- Mengaktifkan upgrade jika target uang tercapai
+    end
+end)
+
+-- Listener untuk mendeteksi perubahan teks di PathWaveDetection
+PathWaveDetection:GetPropertyChangedSignal("Text"):Connect(function()
+    local waveText = PathWaveDetection.Text
+    if waveText == stopWave then
+        upgradeActive = false
+        print("Loop dihentikan karena mencapai " .. stopWave)
     end
 end)
