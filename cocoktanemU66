@@ -87,7 +87,7 @@ local function startSummoning()
             workspace.Map:WaitForChild("Paths"):WaitForChild("2"):WaitForChild("1"),
             workspace.Map:WaitForChild("Deco"):WaitForChild("Electrical Box"):WaitForChild("Meshes/Electrical Box_Cube.001")
         }
-        teleportAndSummon(parts1, Vector3.new(-11, 0, -4)) -- Offset untuk Posisi 1
+        teleportAndSummon(parts1, Vector3.new(0, 0, 25)) -- Offset untuk Posisi 1
         task.wait(waitTimeBetweenTeleports)
 
         -- Posisi 2
@@ -97,17 +97,7 @@ local function startSummoning()
             workspace.Map:WaitForChild("Paths"):WaitForChild("2"):WaitForChild("1"),
             workspace.Map:WaitForChild("Deco"):WaitForChild("Electrical Box"):WaitForChild("Meshes/Electrical Box_Cube.001")
         }
-        teleportAndSummon(parts2, Vector3.new(-11, 0, 8)) -- Offset untuk Posisi 2
-        task.wait(waitTimeBetweenTeleports)
-
-        -- Posisi 3
-        local parts3 = {
-            workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("Start"),
-            workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("4"),
-            workspace.Map:WaitForChild("Paths"):WaitForChild("2"):WaitForChild("1"),
-            workspace.Map:WaitForChild("Deco"):WaitForChild("Electrical Box"):WaitForChild("Meshes/Electrical Box_Cube.001")
-        }
-        teleportAndSummon(parts3, Vector3.new(-11, 0, 15)) -- Offset untuk Posisi 3
+        teleportAndSummon(parts2, Vector3.new(10, 0, 25)) -- Offset untuk Posisi 2
         task.wait(waitTimeBetweenTeleports)
 
         task.wait(waitTimeBetweenLoops)
