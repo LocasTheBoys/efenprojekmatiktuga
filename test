@@ -1,5 +1,5 @@
 -- Konfigurasi
-print("Testis 2")
+print("Testis 3")
 
 -- Konfigurasi
 local petNameToUpgrade = "Nightguard Afton" -- Name of the pet/unit to be upgraded
@@ -34,19 +34,19 @@ end
 
 -- Function to check if a unit has its "UpgradeStar" at Star3
 local function isUnitAtStar3(unit)
-    for _, folder in ipairs(unit:GetChildren()) do
-        if folder:IsA("Folder") and folder.Name == petNameToUpgrade then
-            local upgradeStar = folder:FindFirstChild("UpgradeStar")
-            if upgradeStar then
-                return upgradeStar.Value == "Star3"
-            else
-                print("UpgradeStar not found in unit: " .. unit.Name)
-                return false
-            end
+    local upgradeFolder = TowersFolder:FindFirstChild(unit.Name) -- Locate the unit folder in Towers
+    if upgradeFolder then
+        local upgradeStar = upgradeFolder:FindFirstChild("UpgradeStar") -- Find UpgradeStar
+        if upgradeStar then
+            return upgradeStar.Value == "Star3" -- Check if it is Star3
+        else
+            print("UpgradeStar not found in unit folder: " .. unit.Name)
+            return false
         end
+    else
+        print("Unit folder not found in Towers: " .. unit.Name)
+        return false
     end
-    print("Upgrade folder not found in unit: " .. unit.Name)
-    return false
 end
 
 -- Function to check if all units have been upgraded to Star3
@@ -111,3 +111,4 @@ while true do
 
     wait(checkInterval) -- Delay between each loop iteration
 end
+
