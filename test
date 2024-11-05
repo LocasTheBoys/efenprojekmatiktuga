@@ -1,4 +1,5 @@
 -- Konfigurasi
+print("Testis")
 local petName = "Clowntrap"
 local waitTimeTeleport = 2
 local waitTimeBetweenTeleports = 2
