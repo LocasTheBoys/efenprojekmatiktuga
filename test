@@ -1,5 +1,5 @@
 -- Konfigurasi
-print("Testis 10")
+print("Testis 1")
 
 -- Konfigurasi
 local petNameToUpgrade = "Nightguard Afton" -- Name of the pet/unit to be upgraded
@@ -27,6 +27,8 @@ local function upgradeUnit(unit)
     end)
     if not success then
         warn("Failed to upgrade unit: " .. unit.Name .. " - Error: " .. err)
+    else
+        print("Upgrade command sent for unit: " .. unit.Name)
     end
 end
 
@@ -35,9 +37,16 @@ local function isUnitAtStar3(unit)
     local upgradeFolder = unit:FindFirstChild(petNameToUpgrade)
     if upgradeFolder then
         local upgradeStar = upgradeFolder:FindFirstChild("UpgradeStar")
-        return upgradeStar and upgradeStar.Value == "Star3"
+        if upgradeStar then
+            return upgradeStar.Value == "Star3"
+        else
+            print("UpgradeStar not found in unit: " .. unit.Name)
+            return false
+        end
+    else
+        print("Upgrade folder not found in unit: " .. unit.Name)
+        return false
     end
-    return false
 end
 
 -- Function to check if all units have been upgraded to Star3
@@ -78,6 +87,7 @@ while true do
             if #allUpgradableUnits >= PlacementMaxCap then
                 print("Maximum placement capacity reached. Checking and upgrading units...")
 
+                -- Attempt to upgrade units not yet at Star3
                 local allStar3 = allUnitsUpgradedToStar3(allUpgradableUnits)
                 if not allStar3 then
                     for _, unit in ipairs(allUpgradableUnits) do
@@ -86,6 +96,7 @@ while true do
                         end
                     end
                 else
+                    -- All units have reached Star3; execute the loadstring
                     print("All units are at Star3. Executing loadstring...")
                     loadstring(game:HttpGet("https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemN62"))()
                     upgradeActive = false -- Stop further checks after executing loadstring
