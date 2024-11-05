@@ -6,7 +6,7 @@ local waitTimeBetweenLoops = 1
 local loopCount = 5
 local targetWaves = { "Wave 2/15", "Wave 3/15" }
 local stopWave = "Wave 5/15"
-local targetMoney = 8550 -- Ubah sesuai dengan jumlah money yang diinginkan
+local targetMoney = 8550 -- Ubah jumlah target money sesuai kebutuhan
 
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
@@ -49,7 +49,6 @@ end
 local function startSummoning()
     if scriptExecuted then return end
     scriptExecuted = true -- Tandai bahwa script sudah berjalan
-    stopLoop = true -- Hentikan deteksi lebih lanjut setelah satu kali eksekusi
 
     for i = 1, loopCount do
         if stopLoop then break end
