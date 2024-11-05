@@ -2,9 +2,9 @@
 print("Testis 4")
 wait(15)
 -- Konfigurasi
-local targetWavesForUpgrade = { "Wave 4/15", "Wave 5/15" } -- Wave di mana upgrade diaktifkan
+local targetWavesForUpgrade = { "Wave 0/15", "Wave 1/15" } -- Wave di mana upgrade diaktifkan
 local stopWave = "Wave 10/15" -- Wave di mana loop upgrade akan berhenti
-local petNameToUpgrade = "Clowntrap" -- Nama pet yang akan di-upgrade
+local petNameToUpgrade = "Nightguard Afton" -- Nama pet yang akan di-upgrade
 local checkInterval = 5 -- Interval waktu antar pengecekan (dalam detik)
 local targetMoney = nil -- Target jumlah uang untuk memulai upgrade, bisa diatur ke nil untuk menonaktifkan
 local PlacementMaxCap = 3 -- Kapasitas maksimum unit yang bisa dipasang
