@@ -1,5 +1,7 @@
 -- Konfigurasi
-print("Testis")
+print("Testis 2")
+-- Konfigurasi
+wait(15)
 local petName = "Clowntrap"
 local waitTimeTeleport = 2
 local waitTimeBetweenTeleports = 2
@@ -7,15 +9,28 @@ local waitTimeBetweenLoops = 1
 local loopCount = 5
 local targetWaves = { "Wave 2/15", "Wave 3/15" }
 local stopWave = "Wave 5/15"
-local targetMoney = 8550 -- Ubah jumlah target money sesuai kebutuhan
+local targetMoney = 3000 -- Ubah jumlah target money sesuai kebutuhan
+local PlacementMaxCap = 3 -- Kapasitas maksimum unit yang bisa dipasang
 
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 local Money = Player:WaitForChild("Money")
 local PathWaveDetection = Player.PlayerGui.Top.Wave
+local TowersFolder = workspace:WaitForChild("Towers")
 local executedWaves = {}
 local stopLoop = false
 local scriptExecuted = false -- Variabel untuk memastikan script hanya berjalan sekali
+
+-- Fungsi untuk menghitung jumlah unit yang telah ditempatkan
+local function countPlacedUnits(unitName)
+    local count = 0
+    for _, tower in pairs(TowersFolder:GetChildren()) do
+        if tower.Name == unitName and tower:IsA("Model") then
+            count = count + 1
+        end
+    end
+    return count
+end
 
 -- Fungsi untuk menghitung midpoint dengan logika dari Kumpulan Script Koordinat
 local function calculateAdjustedMidpoint(parts, offset)
@@ -27,6 +42,13 @@ end
 -- Fungsi teleportasi dan summon pet
 local function teleportAndSummon(parts, offset)
     if stopLoop then return end
+
+    local currentPlacementCount = countPlacedUnits(petName)
+    if currentPlacementCount >= PlacementMaxCap then
+        stopLoop = true
+        print("Script dihentikan karena kapasitas maksimum unit tercapai.")
+        return
+    end
 
     local character = Player.Character or Player.CharacterAdded:Wait()
     local adjustedPosition = calculateAdjustedMidpoint(parts, offset)
@@ -112,3 +134,4 @@ Money:GetPropertyChangedSignal("Value"):Connect(function()
         startSummoning()
     end
 end)
+
