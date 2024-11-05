@@ -69,7 +69,7 @@ while true do
                 print("Semua Clowntrap sudah diupgrade ke Star3, mengeksekusi loadstring.")
 
                 -- Eksekusi loadstring jika semua Clowntrap telah diupgrade
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemU64"))()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemN62"))()
             else
                 print("Belum semua Clowntrap diupgrade ke Star3. Upgrade tidak dilanjutkan.")
             end
