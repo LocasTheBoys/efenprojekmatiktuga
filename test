@@ -1,5 +1,5 @@
 -- Konfigurasi
-print("Testis 9")
+print("Testis 10")
 
 -- Konfigurasi
 local petNameToUpgrade = "Nightguard Afton" -- Name of the pet/unit to be upgraded
@@ -20,28 +20,24 @@ local function isWaveEligibleForUpgrade(currentWaveText)
     return table.find(targetWavesForUpgrade, currentWaveText) ~= nil
 end
 
--- Function to count the number of placed units with a specific name
-local function countPlacedUnits(unitName)
-    local count = 0
-    for _, tower in pairs(TowersFolder:GetChildren()) do
-        if tower.Name == unitName and tower:IsA("Model") then
-            count = count + 1
-        end
+-- Function to upgrade a specific unit
+local function upgradeUnit(unit)
+    local success, err = pcall(function()
+        game:GetService("ReplicatedStorage").Remotes.Towers.Upgrade:FireServer(unit)
+    end)
+    if not success then
+        warn("Failed to upgrade unit: " .. unit.Name .. " - Error: " .. err)
     end
-    return count
 end
 
 -- Function to check if a unit has its "UpgradeStar" at Star3
 local function isUnitAtStar3(unit)
-    for _, folder in ipairs(unit:GetChildren()) do
-        if folder:IsA("Folder") and folder.Name == petNameToUpgrade then
-            local upgradeStar = folder:FindFirstChild("UpgradeStar")
-            if upgradeStar and upgradeStar.Value ~= "Star3" then
-                return false
-            end
-        end
+    local upgradeFolder = unit:FindFirstChild(petNameToUpgrade)
+    if upgradeFolder then
+        local upgradeStar = upgradeFolder:FindFirstChild("UpgradeStar")
+        return upgradeStar and upgradeStar.Value == "Star3"
     end
-    return true
+    return false
 end
 
 -- Function to check if all units have been upgraded to Star3
@@ -77,19 +73,25 @@ while true do
             end
         end
 
-        -- Ensure at least one unit was found
+        -- If units are found, proceed with the upgrade process
         if #allUpgradableUnits > 0 then
-            -- Check if the number of placed units has reached the maximum capacity
             if #allUpgradableUnits >= PlacementMaxCap then
-                print("Maximum placement capacity reached. Checking unit upgrades...")
+                print("Maximum placement capacity reached. Checking and upgrading units...")
 
-                if allUnitsUpgradedToStar3(allUpgradableUnits) then
+                local allStar3 = allUnitsUpgradedToStar3(allUpgradableUnits)
+                if not allStar3 then
+                    for _, unit in ipairs(allUpgradableUnits) do
+                        if not isUnitAtStar3(unit) then
+                            upgradeUnit(unit)
+                        end
+                    end
+                else
                     print("All units are at Star3. Executing loadstring...")
                     loadstring(game:HttpGet("https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemN62"))()
                     upgradeActive = false -- Stop further checks after executing loadstring
-                else
-                    print("Not all units are at Star3 yet. Continuing to monitor...")
                 end
+            else
+                print("Not enough units placed for upgrade. Current count: " .. #allUpgradableUnits)
             end
         else
             print("No units found for the specified pet name.")
