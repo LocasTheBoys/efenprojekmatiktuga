@@ -1,5 +1,5 @@
 -- Konfigurasi
-print("Testis 2")
+print("Testis 3")
 -- Konfigurasi
 wait(15)
 local petName = "Clowntrap"
@@ -9,7 +9,7 @@ local waitTimeBetweenLoops = 1
 local loopCount = 5
 local targetWaves = { "Wave 2/15", "Wave 3/15" }
 local stopWave = "Wave 5/15"
-local targetMoney = 8550 -- Ubah jumlah target money sesuai kebutuhan
+local targetMoney = 3000 -- Ubah jumlah target money sesuai kebutuhan
 local PlacementMaxCap = 3 -- Kapasitas maksimum unit yang bisa dipasang
 
 local Players = game:GetService("Players")
@@ -47,6 +47,10 @@ local function teleportAndSummon(parts, offset)
     if currentPlacementCount >= PlacementMaxCap then
         stopLoop = true
         print("Script dihentikan karena kapasitas maksimum unit tercapai.")
+        
+        -- Eksekusi loadstring jika kapasitas maksimum tercapai
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemN63"))()
+        
         return
     end
 
@@ -134,4 +138,3 @@ Money:GetPropertyChangedSignal("Value"):Connect(function()
         startSummoning()
     end
 end)
-
