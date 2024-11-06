@@ -23,5 +23,5 @@ while true do
             end
         end
     end
-    wait(5)
+    wait(2)
 end
