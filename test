@@ -1,4 +1,4 @@
-print("Testis 5")
+print("Testis 6")
 
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
@@ -11,7 +11,7 @@ local waitTimeBetweenTeleports = 2 -- Waktu tunggu sebelum teleportasi berikutny
 local waitTimeBetweenLoops = 3 -- Waktu tunggu antara setiap loop
 local loopCount = 6 -- Jumlah pengulangan teleportasi dan summon pet
 local targetWaves = { "Wave 0/∞", "Wave 1/∞" } -- Wave yang diinginkan untuk mulai summon 
-local stopWave = "Wave 2/∞" -- Wave di mana loop akan berhenti 
+local stopWave = "Wave 10/∞" -- Wave di mana loop akan berhenti 
 local executedWaves = {} -- Menyimpan status eksekusi untuk setiap wave
 local stopLoop = false -- Status untuk menghentikan loop
 
