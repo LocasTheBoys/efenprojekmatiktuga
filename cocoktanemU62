@@ -47,7 +47,7 @@ local function teleportAndSummon(parts, offset)
         print("Script dihentikan karena kapasitas maksimum unit tercapai.")
         
         -- Eksekusi loadstring jika kapasitas maksimum tercapai
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemU63"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/0"))()
         
         return
     end
