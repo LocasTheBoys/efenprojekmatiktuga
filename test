@@ -1,75 +1,45 @@
--- Konfigurasi
-print("Testis 3")
-
--- Konfigurasi
-wait(0.5)
-local petName = "Nightguard Afton"
-local waitTimeTeleport = 1
-local waitTimeBetweenTeleports = 1
-local waitTimeBetweenLoops = 1
-local loopCount = 10
-local targetWaves = { "Wave 0/∞", "Wave 1/∞" }
-local stopWave = "Wave 2/∞"
-local targetMoney = 600 -- Ubah jumlah target money sesuai kebutuhan
-local PlacementMaxCap = 3 -- Kapasitas maksimum unit yang bisa dipasang
+print("Testis 4")
 
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
-local Money = Player:WaitForChild("Money")
 local PathWaveDetection = Player.PlayerGui.Top.Wave
-local TowersFolder = workspace:WaitForChild("Towers")
-local executedWaves = {}
-local stopLoop = false
-local scriptExecuted = false -- Variabel untuk memastikan script hanya berjalan sekali
 
--- Fungsi untuk menghitung jumlah unit yang telah ditempatkan
-local function countPlacedUnits(unitName)
-    local count = 0
-    for _, tower in pairs(TowersFolder:GetChildren()) do
-        if tower.Name == unitName and tower:IsA("Model") then
-            count = count + 1
-        end
+-- Konfigurasi tambahan
+local petName = "Nightguard Afton" -- Nama pet yang akan disummon, mudah diubah di sini
+local waitTimeTeleport = 1 -- Waktu tunggu setelah teleportasi sebelum summon pet
+local waitTimeBetweenTeleports = 2 -- Waktu tunggu sebelum teleportasi berikutnya
+local waitTimeBetweenLoops = 3 -- Waktu tunggu antara setiap loop
+local loopCount = 6 -- Jumlah pengulangan teleportasi dan summon pet
+local targetWaves = { "Wave 0/∞", "Wave 1/∞" } -- Wave yang diinginkan untuk mulai summon 
+local stopWave = "Wave 2/∞" -- Wave di mana loop akan berhenti 
+local executedWaves = {} -- Menyimpan status eksekusi untuk setiap wave
+local stopLoop = false -- Status untuk menghentikan loop
+
+-- Tunggu sampai "Map" ada di Workspace
+local function waitForMap()
+    print("Menunggu Map untuk ter-load...")
+    workspace.ChildAdded:Wait() -- Menunggu hingga ada child baru di Workspace
+    while not workspace:FindFirstChild("Map") do
+        workspace.ChildAdded:Wait() -- Menunggu hingga "Map" ditambahkan
     end
-    return count
+    print("Map ter-load.")
 end
 
--- Fungsi untuk menghitung midpoint dengan logika dari Kumpulan Script Koordinat
-local function calculateAdjustedMidpoint(parts, offset)
-    if #parts < 4 then
-        warn("Tidak ada cukup bagian untuk menghitung midpoint")
-        return nil
-    end
-
-    local pos1 = parts[1] and parts[1].Position or Vector3.new(0, 0, 0)
-    local pos2 = parts[2] and parts[2].Position or Vector3.new(0, 0, 0)
-    local pos3 = parts[3] and parts[3].Position or Vector3.new(0, 0, 0)
-    local pos4 = parts[4] and parts[4].Position or Vector3.new(0, 0, 0)
-    
-    local midpoint1 = (pos1 + pos2) / 2
-    local midpoint2 = (pos3 + pos4) / 2
+-- Fungsi untuk menghitung posisi dengan offset
+local function calculateAdjustedPosition(part1, part2, part3, part4, offset)
+    local midpoint1 = (part1.Position + part2.Position) / 2
+    local midpoint2 = (part3.Position + part4.Position) / 2
     return ((midpoint1 + midpoint2) / 2) + offset
 end
 
--- Fungsi teleportasi dan summon pet
-local function teleportAndSummon(parts, offset)
+-- Fungsi teleportasi ke posisi yang disesuaikan
+local function teleportAndSummon(part1, part2, part3, part4, offset)
     if stopLoop then return end
 
-    local currentPlacementCount = countPlacedUnits(petName)
-    if currentPlacementCount >= PlacementMaxCap then
-        stopLoop = true
-        print("Script dihentikan karena kapasitas maksimum unit tercapai.")
-        
-        -- Eksekusi loadstring jika kapasitas maksimum tercapai
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/LocasTheBoys/efentedehuy/refs/heads/main/cocoktanemendsZ3"))()
-        
-        return
-    end
-
     local character = Player.Character or Player.CharacterAdded:Wait()
-    local adjustedPosition = calculateAdjustedMidpoint(parts, offset)
-    if not adjustedPosition then return end  -- Cegah teleportasi jika posisi tidak valid
+    local finalPosition = calculateAdjustedPosition(part1, part2, part3, part4, offset)
+    character.HumanoidRootPart.CFrame = CFrame.new(finalPosition)
 
-    character.HumanoidRootPart.CFrame = CFrame.new(adjustedPosition)
     task.wait(waitTimeTeleport)
 
     local argsReset = { [1] = "Reset" }
@@ -84,51 +54,37 @@ local function teleportAndSummon(parts, offset)
     game:GetService("ReplicatedStorage").Remotes.Towers.SummonTower:FireServer(unpack(argsSummon))
 end
 
--- Fungsi untuk menyiapkan daftar koordinat teleportasi dengan posisi baru
+-- Menyiapkan daftar koordinat teleportasi
 local function setupPartList()
     local offsetList = {
-        Vector3.new(-1, 0, -16),   -- Offset posisi ke-1 (POSISI KE 1)
-        Vector3.new(-1, 0, -22),  -- Offset posisi ke-2 (POSISI KE 2)
-        Vector3.new(9, 0, -17)   -- Offset posisi ke-3 (POSISI KE 3)
+        Vector3.new(3, 0, 20),  -- Offset posisi ke-1 (POSISI KE 1)
+        Vector3.new(12, 0, -1),  -- Offset posisi ke-2 (POSISI KE 2)
+        Vector3.new(-4, 0, -1)   -- Offset posisi ke-3 (POSISI KE 3)
     }
     local partList = {}
 
-    -- Untuk setiap offset, sesuaikan posisi teleportasi dan summon
     for _, offset in ipairs(offsetList) do
-        local pathsFolder = workspace:WaitForChild("Map"):WaitForChild("Paths")
-        local parts = {
-            pathsFolder:FindFirstChild("1") and pathsFolder["1"]:FindFirstChild("Start"),
-            pathsFolder:FindFirstChild("2") and pathsFolder["2"]:FindFirstChild("Start"),
-            pathsFolder:FindFirstChild("4") and pathsFolder["4"]:FindFirstChild("Start"),
-            pathsFolder:FindFirstChild("3") and pathsFolder["3"]:FindFirstChild("5"),
-            pathsFolder:FindFirstChild("2") and pathsFolder["2"]:FindFirstChild("5")
-        }
-        
-        -- Filter bagian yang nil
-        for i = #parts, 1, -1 do
-            if not parts[i] then
-                table.remove(parts, i)
-            end
-        end
-
-        table.insert(partList, { parts = parts, offset = offset })
+        table.insert(partList, {
+            workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("Start"),
+            workspace.Map:WaitForChild("Paths"):WaitForChild("2"):WaitForChild("Start"),
+            workspace.Map:WaitForChild("Paths"):WaitForChild("4"):WaitForChild("Start"),
+            workspace.Map:WaitForChild("Paths"):WaitForChild("3"):WaitForChild("5"),
+            workspace.Map:WaitForChild("Paths"):WaitForChild("2"):WaitForChild("5"),
+            offset
+        })
     end
 
     return partList
 end
 
--- Fungsi utama untuk memulai summon dengan koordinat dari setupPartList
+-- Fungsi utama untuk memulai summon
 local function startSummoning()
-    if scriptExecuted then return end
-    scriptExecuted = true
-
-    local partList = setupPartList()  -- Mengambil daftar koordinat dari fungsi setupPartList
-
+    local partList = setupPartList()
     for i = 1, loopCount do
         if stopLoop then break end
 
-        for _, partData in ipairs(partList) do
-            teleportAndSummon(partData.parts, partData.offset)
+        for _, parts in ipairs(partList) do
+            teleportAndSummon(parts[1], parts[2], parts[3], parts[4], parts[5])
             task.wait(waitTimeBetweenTeleports)
         end
 
@@ -138,26 +94,23 @@ end
 
 -- Listener untuk mendeteksi perubahan teks di PathWaveDetection
 PathWaveDetection:GetPropertyChangedSignal("Text"):Connect(function()
-    if scriptExecuted then return end
     local waveText = PathWaveDetection.Text
+
+    -- Hentikan loop jika wave mencapai atau melebihi stopWave
     if waveText == stopWave then
         stopLoop = true
         print("Loop dihentikan karena mencapai " .. stopWave)
         return
     end
 
+    -- Jika wave yang diinginkan terdeteksi dan belum dieksekusi, mulai summon
     if table.find(targetWaves, waveText) and not executedWaves[waveText] then
         executedWaves[waveText] = true
-        print("Target wave tercapai: " .. waveText)
+
+        -- Mulai summon
         startSummoning()
     end
 end)
 
--- Listener untuk mendeteksi perubahan nilai Money
-Money:GetPropertyChangedSignal("Value"):Connect(function()
-    if Money.Value >= targetMoney and not scriptExecuted then
-        print("Jumlah money tercapai: " .. Money.Value)
-        startSummoning()
-    end
-end)
-
+-- Menunggu sampai "Map" ter-load
+waitForMap()
