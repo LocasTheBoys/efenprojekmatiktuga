@@ -1,7 +1,6 @@
--- Konfigurasi
+
 wait(15)
 -- Konfigurasi
-
 local petName = "Eclipse Ballora"
 local waitTimeTeleport = 1
 local waitTimeBetweenTeleports = 2
