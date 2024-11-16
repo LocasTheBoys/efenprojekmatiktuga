@@ -1,4 +1,4 @@
-print("Testis 2")
+print("Testis 3")
 
 -- Konfigurasi
 local Players = game:GetService("Players")
@@ -6,25 +6,11 @@ local Player = Players.LocalPlayer
 local PathWaveDetection = Player.PlayerGui.Top.Wave
 
 -- Konfigurasi tambahan
-local petName = "Nightguard Afton" -- Nama pet yang akan disummon
 local waitTimeTeleport = 1 -- Waktu tunggu setelah teleportasi sebelum summon pet
-local waitTimeBetweenTeleports = 2 -- Waktu tunggu sebelum teleportasi berikutnya
-local waitTimeBetweenLoops = 3 -- Waktu tunggu antara setiap loop
-local loopCount = 6 -- Jumlah pengulangan teleportasi dan summon pet
-local targetWaves = { "Wave 0/15", "Wave 1/15" } -- Wave yang diinginkan untuk mulai summon 
-local stopWave = "Wave 2/15" -- Wave di mana loop akan berhenti 
-local executedWaves = {} -- Menyimpan status eksekusi untuk setiap wave
+local petNameAfton = "Nightguard Afton" -- Nama pet Nightguard Afton
+local petNameBallora = "Eclipse Ballora" -- Nama pet Eclipse Ballora
+local stopWave = "Wave 2/15" -- Wave di mana loop akan berhenti
 local stopLoop = false -- Status untuk menghentikan loop
-
--- Tunggu sampai "Map" ada di Workspace
-local function waitForMap()
-    print("Menunggu Map untuk ter-load...")
-    workspace.ChildAdded:Wait() -- Menunggu hingga ada child baru di Workspace
-    while not workspace:FindFirstChild("Map") do
-        workspace.ChildAdded:Wait() -- Menunggu hingga "Map" ditambahkan
-    end
-    print("Map ter-load.")
-end
 
 -- Fungsi untuk menghitung posisi dengan offset
 local function calculateAdjustedPosition(part1, part2, part3, part4, offset)
@@ -33,11 +19,13 @@ local function calculateAdjustedPosition(part1, part2, part3, part4, offset)
     return ((midpoint1 + midpoint2) / 2) + offset
 end
 
--- Fungsi teleport dan summon Eclipse Ballora
-local function teleportEclipseBallora()
+-- Fungsi untuk teleport dan summon pet
+local function teleportAndSummonPet(petName, offset)
+    if stopLoop then return end
+
     local character = Player.Character or Player.CharacterAdded:Wait()
-    
-    -- Menggunakan koordinat untuk Eclipse Ballora
+
+    -- Ambil bagian untuk koordinat
     local parts = {
         workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("Start"),
         workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("4"),
@@ -45,14 +33,13 @@ local function teleportEclipseBallora()
         workspace.Map:WaitForChild("Deco"):WaitForChild("Electrical Box"):WaitForChild("Meshes/Electrical Box_Cube.001")
     }
 
-    -- Hitung posisi tengah (midpoint) dan tambahkan offset
-    local offset = Vector3.new(-2, 0, -5) -- Offset untuk Eclipse Ballora
+    -- Hitung posisi yang disesuaikan
     local finalPosition = calculateAdjustedPosition(parts[1], parts[2], parts[3], parts[4], offset)
 
-    -- Pindahkan karakter ke posisi final
+    -- Pindahkan karakter ke posisi yang dihitung
     character.HumanoidRootPart.CFrame = CFrame.new(finalPosition)
 
-    -- Reset status sebelum summon
+    -- Reset sebelum summon
     local argsReset = { [1] = "Reset" }
     game:GetService("ReplicatedStorage").Remotes.Misc.StopSettings:FireServer(unpack(argsReset))
 
@@ -60,75 +47,20 @@ local function teleportEclipseBallora()
         game:GetService("ReplicatedStorage").Remotes.Misc.StopSettings:FireServer()
     end
 
-    -- Summon Eclipse Ballora
-    local humanoidRootPartCFrame = character.HumanoidRootPart.CFrame
-    local argsSummon = { [1] = "Eclipse Ballora", [2] = humanoidRootPartCFrame }
-    game:GetService("ReplicatedStorage").Remotes.Towers.SummonTower:FireServer(unpack(argsSummon))
-
-    task.wait(waitTimeTeleport) -- Tunggu sebelum melanjutkan
-end
-
--- Fungsi teleportasi dan summon pet (Nightguard Afton)
-local function teleportAndSummon(part1, part2, part3, part4, offset)
-    if stopLoop then return end
-
-    local character = Player.Character or Player.CharacterAdded:Wait()
-    local finalPosition = calculateAdjustedPosition(part1, part2, part3, part4, offset)
-    character.HumanoidRootPart.CFrame = CFrame.new(finalPosition)
-
-    task.wait(waitTimeTeleport)
-
-    local argsReset = { [1] = "Reset" }
-    game:GetService("ReplicatedStorage").Remotes.Misc.StopSettings:FireServer(unpack(argsReset))
-
-    for i = 1, 68 do
-        game:GetService("ReplicatedStorage").Remotes.Misc.StopSettings:FireServer()
-    end
-
+    -- Summon pet
     local humanoidRootPartCFrame = character.HumanoidRootPart.CFrame
     local argsSummon = { [1] = petName, [2] = humanoidRootPartCFrame }
     game:GetService("ReplicatedStorage").Remotes.Towers.SummonTower:FireServer(unpack(argsSummon))
 end
 
--- Menyiapkan daftar koordinat teleportasi untuk Nightguard Afton
-local function setupPartList()
-    local offsetList = {
-        Vector3.new(-2, 0, 4), -- Offset posisi ke-1
-        Vector3.new(-2, 0, 10), -- Offset posisi ke-2
-        Vector3.new(-2, 0, 15) -- Offset posisi ke-3
-    }
-    local partList = {}
-
-    for _, offset in ipairs(offsetList) do
-        table.insert(partList, {
-            workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("Start"),
-            workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("4"),
-            workspace.Map:WaitForChild("Paths"):WaitForChild("2"):WaitForChild("1"),
-            workspace.Map:WaitForChild("Deco"):WaitForChild("Electrical Box"):WaitForChild("Meshes/Electrical Box_Cube.001"),
-            offset
-        })
-    end
-
-    return partList
-end
-
 -- Fungsi utama untuk memulai summon
 local function startSummoning()
-    local partList = setupPartList()
-    for i = 1, loopCount do
-        if stopLoop then break end
+    -- Pertama, summon Eclipse Ballora di lokasi tertentu
+    teleportAndSummonPet(petNameBallora, Vector3.new(-2, 0, -5)) -- Offset untuk Eclipse Ballora
+    task.wait(waitTimeTeleport)
 
-        -- Teleport dan summon Eclipse Ballora
-        teleportEclipseBallora()
-
-        -- Teleport dan summon Nightguard Afton
-        for _, parts in ipairs(partList) do
-            teleportAndSummon(parts[1], parts[2], parts[3], parts[4], parts[5])
-            task.wait(waitTimeBetweenTeleports)
-        end
-
-        task.wait(waitTimeBetweenLoops)
-    end
+    -- Kedua, summon Nightguard Afton di lokasi tertentu
+    teleportAndSummonPet(petNameAfton, Vector3.new(-2, 0, 4)) -- Offset untuk Nightguard Afton
 end
 
 -- Listener untuk mendeteksi perubahan teks di PathWaveDetection
@@ -142,14 +74,22 @@ PathWaveDetection:GetPropertyChangedSignal("Text"):Connect(function()
         return
     end
 
-    -- Jika wave yang diinginkan terdeteksi dan belum dieksekusi, mulai summon
-    if table.find(targetWaves, waveText) and not executedWaves[waveText] then
-        executedWaves[waveText] = true
-
-        -- Mulai summon
+    -- Mulai summon saat wave dimulai
+    if not stopLoop then
         startSummoning()
     end
 end)
 
--- Menunggu sampai "Map" ter-load
+-- Tunggu sampai Map ter-load
+local function waitForMap()
+    print("Menunggu Map untuk ter-load...")
+    workspace.ChildAdded:Wait()
+    while not workspace:FindFirstChild("Map") do
+        workspace.ChildAdded:Wait()
+    end
+    print("Map ter-load.")
+end
+
+-- Eksekusi script
 waitForMap()
+startSummoning()
