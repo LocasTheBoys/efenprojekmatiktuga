@@ -1,4 +1,4 @@
-print("Testis 1")
+print("Testis 2")
 
 -- Konfigurasi
 local Players = game:GetService("Players")
@@ -6,7 +6,7 @@ local Player = Players.LocalPlayer
 local PathWaveDetection = Player.PlayerGui.Top.Wave
 
 -- Konfigurasi tambahan
-local petName = "Nightguard Afton" -- Nama pet yang akan disummon, mudah diubah di sini
+local petName = "Nightguard Afton" -- Nama pet yang akan disummon
 local waitTimeTeleport = 1 -- Waktu tunggu setelah teleportasi sebelum summon pet
 local waitTimeBetweenTeleports = 2 -- Waktu tunggu sebelum teleportasi berikutnya
 local waitTimeBetweenLoops = 3 -- Waktu tunggu antara setiap loop
@@ -33,7 +33,42 @@ local function calculateAdjustedPosition(part1, part2, part3, part4, offset)
     return ((midpoint1 + midpoint2) / 2) + offset
 end
 
--- Fungsi teleportasi ke posisi yang disesuaikan dan summon pet
+-- Fungsi teleport dan summon Eclipse Ballora
+local function teleportEclipseBallora()
+    local character = Player.Character or Player.CharacterAdded:Wait()
+    
+    -- Menggunakan koordinat untuk Eclipse Ballora
+    local parts = {
+        workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("Start"),
+        workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("4"),
+        workspace.Map:WaitForChild("Paths"):WaitForChild("2"):WaitForChild("1"),
+        workspace.Map:WaitForChild("Deco"):WaitForChild("Electrical Box"):WaitForChild("Meshes/Electrical Box_Cube.001")
+    }
+
+    -- Hitung posisi tengah (midpoint) dan tambahkan offset
+    local offset = Vector3.new(-2, 0, -5) -- Offset untuk Eclipse Ballora
+    local finalPosition = calculateAdjustedPosition(parts[1], parts[2], parts[3], parts[4], offset)
+
+    -- Pindahkan karakter ke posisi final
+    character.HumanoidRootPart.CFrame = CFrame.new(finalPosition)
+
+    -- Reset status sebelum summon
+    local argsReset = { [1] = "Reset" }
+    game:GetService("ReplicatedStorage").Remotes.Misc.StopSettings:FireServer(unpack(argsReset))
+
+    for i = 1, 68 do
+        game:GetService("ReplicatedStorage").Remotes.Misc.StopSettings:FireServer()
+    end
+
+    -- Summon Eclipse Ballora
+    local humanoidRootPartCFrame = character.HumanoidRootPart.CFrame
+    local argsSummon = { [1] = "Eclipse Ballora", [2] = humanoidRootPartCFrame }
+    game:GetService("ReplicatedStorage").Remotes.Towers.SummonTower:FireServer(unpack(argsSummon))
+
+    task.wait(waitTimeTeleport) -- Tunggu sebelum melanjutkan
+end
+
+-- Fungsi teleportasi dan summon pet (Nightguard Afton)
 local function teleportAndSummon(part1, part2, part3, part4, offset)
     if stopLoop then return end
 
@@ -55,45 +90,7 @@ local function teleportAndSummon(part1, part2, part3, part4, offset)
     game:GetService("ReplicatedStorage").Remotes.Towers.SummonTower:FireServer(unpack(argsSummon))
 end
 
--- Fungsi teleportasi khusus untuk Eclipse Ballora
-local function teleportEclipseBallora()
-    local character = Player.Character or Player.CharacterAdded:Wait()
-    
-    -- Koordinat posisi Eclipse Ballora
-    local parts = {
-        workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("Start"),
-        workspace.Map:WaitForChild("Paths"):WaitForChild("1"):WaitForChild("4"),
-        workspace.Map:WaitForChild("Paths"):WaitForChild("2"):WaitForChild("1"),
-        workspace.Map:WaitForChild("Deco"):WaitForChild("Electrical Box"):WaitForChild("Meshes/Electrical Box_Cube.001")
-    }
-
-    local midpoint1 = (parts[1].Position + parts[2].Position) / 2
-    local midpoint2 = (parts[3].Position + parts[4].Position) / 2
-
-    -- Offset khusus Eclipse Ballora
-    local offset = Vector3.new(17, 0, 15) 
-    local finalPosition = ((midpoint1 + midpoint2) / 2) + offset
-
-    -- Teleportasi ke posisi Eclipse Ballora
-    character.HumanoidRootPart.CFrame = CFrame.new(finalPosition)
-
-    -- Bagian reset sebelum summon
-    local argsReset = { [1] = "Reset" }
-    game:GetService("ReplicatedStorage").Remotes.Misc.StopSettings:FireServer(unpack(argsReset))
-
-    for i = 1, 68 do
-        game:GetService("ReplicatedStorage").Remotes.Misc.StopSettings:FireServer()
-    end
-
-    -- Summon Eclipse Ballora
-    local humanoidRootPartCFrame = character.HumanoidRootPart.CFrame
-    local argsSummon = { [1] = "Eclipse Ballora", [2] = humanoidRootPartCFrame }
-    game:GetService("ReplicatedStorage").Remotes.Towers.SummonTower:FireServer(unpack(argsSummon))
-
-    task.wait(waitTimeTeleport) -- Tunggu sebelum lanjut
-end
-
--- Menyiapkan daftar koordinat teleportasi
+-- Menyiapkan daftar koordinat teleportasi untuk Nightguard Afton
 local function setupPartList()
     local offsetList = {
         Vector3.new(-2, 0, 4), -- Offset posisi ke-1
@@ -121,7 +118,7 @@ local function startSummoning()
     for i = 1, loopCount do
         if stopLoop then break end
 
-        -- Teleport dan summon Eclipse Ballora terlebih dahulu
+        -- Teleport dan summon Eclipse Ballora
         teleportEclipseBallora()
 
         -- Teleport dan summon Nightguard Afton
