@@ -20,7 +20,7 @@ if game.PlaceId == 15860930970 then
 
     local scripts = {
         "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemA61",--esmurah
-        "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemA62,--es2bedilmurah
+        "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemA62",--es2bedilmurah
         "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemA63",--si es pecok 2
         "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemA64",--si 3
         "https://raw.githubusercontent.com/LocasTheBoys/efenprojekmatiktuga/refs/heads/main/cocoktanemA65",-- si itsme
