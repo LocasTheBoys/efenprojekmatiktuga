@@ -2,7 +2,7 @@
 wait(15)
 -- Konfigurasi
 
-local petName = ""Black Ice Freddy" --apex
+local petName = "Black Ice Freddy" --apex
 local waitTimeTeleport = 1
 local waitTimeBetweenTeleports = 2
 local waitTimeBetweenLoops = 2
