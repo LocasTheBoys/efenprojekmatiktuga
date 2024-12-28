@@ -1,7 +1,7 @@
 wait(15)
 -- Konfigurasi pengganti apex
 local targetWavesForUpgrade = { "Wave 7/15", "Wave 8/15" } -- Wave di mana upgrade diaktifkan
-local stopWave = "Wave 15/15" -- Wave di mana loop upgrade akan berhenti
+local stopWave = "Wave 14/15" -- Wave di mana loop upgrade akan berhenti
 local petNameToUpgrade = "Jolly Shadow Bonnie" -- Nama pet yang akan di-upgrade
 local checkInterval = 5 -- Interval waktu antar pengecekan (dalam detik)
 
