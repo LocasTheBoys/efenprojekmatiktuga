@@ -1,5 +1,5 @@
 wait(15)
--- Konfigurasi
+-- Konfigurasi ini rusak hati hati saat gunakan instant crash
 local targetWavesToDisableSkip = {"Wave 1/15"} -- Waves yang ingin menonaktifkan auto skip 1-5
 local waitTimeBeforeCheck = 3 -- Waktu tunggu sebelum memulai pengecekan wave (dalam detik)
 
